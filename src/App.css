@@ -1,13 +1,17 @@
 .App {
+
   padding: 30px;
   display: flex;
   background-color: darkslategrey;
   height: 100vh;
 }
-
-.App > div {
-  margin-right: 50px;
+.App-header{
+  width: 220px;
+  margin: 100px auto;
 }
+/*.App > div {*/
+/*  margin-right: 50px;*/
+/*}*/
 
 .todolist {
   border: 3px solid darkgrey;
@@ -15,4 +19,25 @@
   border-radius: 5px;
   padding: 15px;
   height: max-content;
+}
+
+.task {
+  font-weight: 450;
+}
+
+.task-done {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
+.btn-active {
+
+  border: 1px solid darkgrey;
+  border-radius: 20px;
+}
+
+.input-error {
+  outline: none;
+  border: 2px solid red;
+
 }

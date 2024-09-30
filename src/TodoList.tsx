@@ -15,15 +15,17 @@ type TodoListPropsType = {
     removeTask: (taskId: string) => void,
     ChangeFilter: (nextFilterValue: FilterValuesType) => void
     addTask: (newTaskTitle: string) => void,
-
-
+    ChangeTaskStatus: (taskId: string, newIsDoneValue: boolean) => void
+    filter: FilterValuesType
 }
 
 
 const TodoList = (props: TodoListPropsType) => {
 
 
-    let {title, tasks, removeTask, ChangeFilter, addTask} = props;
+    let {title, tasks, removeTask, ChangeFilter, addTask, ChangeTaskStatus, filter} = props;
+
+    const [inputError, setInputError] = useState<boolean>(false);
 
 
     // let taskList: Array<JSX.Element> | JSX.Element;
@@ -50,13 +52,13 @@ const TodoList = (props: TodoListPropsType) => {
     //     return props.removeTask(id)
     // }
 
-
     const listItems: Array<JSX.Element> =
         tasks.map(t => {
+            const onChangeTaskStatusHandler = (e: ChangeEvent<HTMLInputElement>) => ChangeTaskStatus(t.id, e.currentTarget.checked)
             return (
                 <li key={t.id}>
-                    <input type={"checkbox"} checked={t.isDone}/>
-                    <span>{t.title}</span>
+                    <input type={"checkbox"} onChange={onChangeTaskStatusHandler} checked={t.isDone}/>
+                    <span className={t.isDone ? 'task-done' : 'task'}>{t.title}</span>
                     <button onClick={() => removeTask(t.id)}>x</button>
                 </li>
             )
@@ -67,13 +69,24 @@ const TodoList = (props: TodoListPropsType) => {
 
 
     const onClickAddTask = () => {
-        addTask(newTaskTitle)
+
+        const trimmedTitle = newTaskTitle.trim()
+        if (trimmedTitle) {
+            addTask(trimmedTitle)
+        } else {
+            setInputError(true)
+            window.setTimeout(() => {
+                setInputError(false)
+            }, 2500)
+
+        }
         setNewTaskTitle('')
+
     }
 
     const isAddBtnDisabled = !newTaskTitle || newTaskTitle.length >= 15
 
-    const userMessage = newTaskTitle.length >= 15
+    const userMessage = inputError ? <span>Task title is empty</span> : newTaskTitle.length >= 25
         ? <span style={{color: "darkred"}}>Your task title is too long</span>
         : <span>Enter new task title</span>
 
@@ -90,13 +103,13 @@ const TodoList = (props: TodoListPropsType) => {
 
     return (
         <div className="todolist">
-            <h3>{props.title}</h3>
+            <h3 style={{width:'110px', margin: '10px auto', fontSize:'25px'}}>{props.title}</h3>
             <div>
                 <input
                     value={newTaskTitle}
                     onChange={onChangeSetNewTaskTitle}
                     onKeyDown={onKeyDownAddTask}
-
+                    className={inputError ? 'input-error' : undefined}
                 />
                 <button
                     onClick={onClickAddTask}
@@ -110,9 +123,14 @@ const TodoList = (props: TodoListPropsType) => {
             </div>
             {taskList}
             <div>
-                <button onClick={() => ChangeFilter('All')}>All</button>
-                <button onClick={() => ChangeFilter('Active')}>Active</button>
-                <button onClick={() => ChangeFilter('Completed')}>Completed</button>
+                <button className={filter === 'All' ? 'btn-active' : ''} onClick={() => ChangeFilter('All')}>All
+                </button>
+                <button className={filter === 'Active' ? 'btn-active' : ''}
+                        onClick={() => ChangeFilter('Active')}>Active
+                </button>
+                <button className={filter === 'Completed' ? 'btn-active' : ''}
+                        onClick={() => ChangeFilter('Completed')}>Completed
+                </button>
             </div>
         </div>
     )
