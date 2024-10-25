@@ -1,6 +1,8 @@
-import React, {useState} from 'react';
+import React, {useReducer, useState} from 'react';
 import './App.css';
 import TodoList, {TaskType} from "./TodoList";
+import {addTaskAC, removeTaskAC, tasksReducer} from "./reducers/tasksReducer";
+import {ChangeFilterAC, filterReducer} from "./reducers/filterReducer";
 
 export type FilterValuesType = 'All' | 'Active' | 'Completed'
 
@@ -15,7 +17,16 @@ function App() {
     //
     // ]
 
-    const [tasks, setTasks] = useState(
+    // const [tasks, setTasks] = useState(
+    //     [
+    //
+    //         {id: crypto.randomUUID(), isDone: true, title: 'HTML&CSS'},
+    //         {id: crypto.randomUUID(), isDone: false, title: 'JS'},
+    //         {id: crypto.randomUUID(), isDone: true, title: 'React'},
+    //
+    //     ])
+
+    const [tasks, dispatchTasks] = useReducer(tasksReducer,
         [
 
             {id: crypto.randomUUID(), isDone: true, title: 'HTML&CSS'},
@@ -33,13 +44,17 @@ function App() {
         //         nextState.push(tasks[i])
         //     }
         // }
-        setTasks(tasks.filter( t => t.id !== taskId))
 
+
+
+        // setTasks(tasks.filter( t => t.id !== taskId))
+
+        dispatchTasks(removeTaskAC(taskId))
     }
 
     const ChangeTaskStatus = (taskId:string, newIsDoneValue: boolean)=>{
-        const updatedTasks: Array<TaskType> = tasks.map(t => t.id === taskId ? {...t, isDone: newIsDoneValue} : t)
-        setTasks(updatedTasks)
+        // const updatedTasks: Array<TaskType> = tasks.map(t => t.id === taskId ? {...t, isDone: newIsDoneValue} : t)
+        // setTasks(updatedTasks)
 
 
     }
@@ -58,14 +73,22 @@ function App() {
         //
         // }
         // const nextState: Array<TaskType> = [newTask, ...tasks]
-        setTasks([{id: crypto.randomUUID(), title:newTaskTitle, isDone: false}, ...tasks])
+
+
+
+        // setTasks([{id: crypto.randomUUID(), title:newTaskTitle, isDone: false}, ...tasks])
+
+
+        dispatchTasks(addTaskAC(newTaskTitle))
     }
 
 
 
 
 
-    const [filter, setFilter] = useState<FilterValuesType>('All')
+    // const [filter, setFilter] = useState<FilterValuesType>('All')
+
+    const [filter, dispatchFilter] = useReducer(filterReducer,'All')
 
     const getFiltredTasksForRender = (allTasks: Array<TaskType>, filterValue: FilterValuesType): Array<TaskType> => {
 
@@ -78,7 +101,8 @@ function App() {
         }
     }
     const ChangeFilter = (nextFilterValue: FilterValuesType) => {
-        setFilter(nextFilterValue)
+        // setFilter(nextFilterValue)
+        dispatchFilter(ChangeFilterAC(nextFilterValue))
     }
 
     const filtredTasksForRender: Array<TaskType> = getFiltredTasksForRender(tasks, filter)
@@ -92,17 +116,19 @@ function App() {
     // }
     //
 
+    const arr =[1,2].map(t => {} )
     return (
         <div className="App">
             <div className="App-header">
-            <TodoList
-                title={todoListTitle_1}
-                tasks={filtredTasksForRender}
-                removeTask={removeTask}
-                ChangeFilter={ChangeFilter}
-                addTask={addTask}  ChangeTaskStatus={ChangeTaskStatus}
-                filter={filter }
-            />
+                {arr.map(t =>  <TodoList
+                    title={todoListTitle_1}
+                    tasks={filtredTasksForRender}
+                    removeTask={removeTask}
+                    ChangeFilter={ChangeFilter}
+                    addTask={addTask}  ChangeTaskStatus={ChangeTaskStatus}
+                    filter={filter }
+                />)}
+
             </div>
         </div>
     );
